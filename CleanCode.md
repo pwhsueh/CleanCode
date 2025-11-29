@@ -17,18 +17,19 @@
 ## 📖 目錄
 1. 命名規則 (Naming)
 2. 函式設計 (Functions)
-3. 條件判斷 (Conditionals)
-4. 類別與物件 (Classes & Objects)
-5. 註解原則 (Comments)
-6. 重構與避免重複 (Refactoring)
-7. 錯誤處理 (Error Handling)
-8. 一致性與風格工具 (Consistency)
-9. 進階：抽象層次與依賴反轉 (Abstraction & Dependency)
-10. 進階：模組化與測試性 (Modularization & Testability)
-11. 進階：不可變性與型別安全 (Immutability & Type Safety)
-12. 進階：魔術數字/字串處理 (Magic Numbers & Strings)
-13. 進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
-14. 附錄：Clean Code Checklist
+3. 理解與管理副作用 (Side Effects)
+4. 條件判斷 (Conditionals)
+5. 類別與物件 (Classes & Objects)
+6. 註解原則 (Comments)
+7. 重構與避免重複 (Refactoring)
+8. 錯誤處理 (Error Handling)
+9. 一致性與風格工具 (Consistency)
+10. 進階：抽象層次與依賴反轉 (Abstraction & Dependency)
+11. 進階：模組化與測試性 (Modularization & Testability)
+12. 進階：不可變性與型別安全 (Immutability & Type Safety)
+13. 進階：魔術數字/字串處理 (Magic Numbers & Strings)
+14. 進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
+15. 附錄：Clean Code Checklist
 
 ---
 
@@ -293,6 +294,12 @@ function processUserData(user: User, gameBoard: Cell[]) {
 #### ✅ 好的寫法
 ```typescript
 // 每個函式只做一件事
+function processUser(user: User): void {
+  validateUser(user);
+  saveUser(user);
+  notifyUser(user);
+}
+
 function validateUser(user: User): void {
   if (!user.email.includes('@')) {
     throw new Error('Invalid email');
@@ -305,12 +312,6 @@ function saveUser(user: User): void {
 
 function notifyUser(user: User): void {
   emailService.notify(user);
-}
-
-function processUser(user: User): void {
-  validateUser(user);
-  saveUser(user);
-  notifyUser(user);
 }
 
 // 避免輸出型參數，使用物件導向
@@ -393,7 +394,132 @@ class GameBoard:
 
 ---
 
-## 三、條件判斷 (Conditionals)
+## 三、理解與管理副作用 (Side Effects)
+
+在函式設計中，最核心也最容易被忽略的概念之一就是「副作用」。理解並妥善管理副作用，是區分普通程式碼與高品質、可維護程式碼的關鍵。
+
+### ❓ 什麼是副作用 (Side Effect)？
+
+**副作用**是指函式在執行過程中，除了回傳一個值之外，還對**函式外部的可見狀態**產生了任何影響。
+
+常見的副作用包括：
+-   修改全域變數或靜態變數。
+-   修改傳入的參數（如物件或陣列）。
+-   執行任何 I/O 操作，例如：
+    -   寫入檔案或資料庫。
+    -   呼叫外部 API。
+    -   在控制台（Console）上印出日誌。
+-   觸發一個事件或訊息。
+
+### ✨ 什麼是純函式 (Pure Function)？
+
+與副作用相對的概念是「純函式」。一個函式如果滿足以下兩個條件，就是純函式：
+1.  **相同的輸入永遠得到相同的輸出**：函式的回傳值只依賴於其輸入參數，不受任何外部狀態影響。
+2.  **沒有可觀察的副作用**：函式不會修改任何外部狀態。
+
+純函式就像一個可靠的數學公式，例如 `sum(2, 3)` 永遠會回傳 `5`，無論你呼叫它多少次，也不會影響到系統的其他部分。
+
+### 💔 為什麼副作用是個問題？
+
+-   **不可預測性**：有副作用的函式很難預測其行為。`calculateTotal()` 可能這次回傳 `100`，下次因為某個全域折扣變數被修改而回傳 `80`。
+-   **難以測試**：測試有副作用的函式很麻煩。你需要模擬（Mock）資料庫、API，並驗證外部狀態是否被正確修改。而測試純函式只需要給定輸入並斷言輸出即可。
+-   **降低可讀性與可維護性**：當你看到一個函式呼叫時，如果它是純函式，你只需要關心它的回傳值。如果它有副作用，你還必須追蹤它可能對系統產生的所有潛在影響。
+-   **併發問題**：在多執行緒環境下，如果多個執行緒同時呼叫一個會修改共享狀態的函式，就會產生競爭條件 (Race Condition)，導致不可預期的錯誤。
+
+### 🛠️ 如何管理副作用？
+
+副作用是不可避免的，例如我們總需要將資料存入資料庫。關鍵不是完全消滅副作用，而是**將它們與核心業務邏輯分離**。
+
+**策略：將純邏輯與不純的行為分離**
+
+讓大部分的程式碼（特別是複雜的業務邏輯）保持純粹，並將副作用推向系統的邊緣（例如 Controller、主程式進入點）。
+
+#### 範例：計算購物車總價
+
+-   ❌ **不好的寫法 (副作用與邏輯混合)**
+    ```typescript
+    // 全域變數，可能在任何地方被修改
+    let taxRate = 0.05; 
+
+    // 這個函式有副作用：讀取了全域變數 taxRate
+    function calculateTotal(items: { price: number }[]): number {
+      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+      const tax = subtotal * taxRate; // 依賴外部狀態
+      return subtotal + tax;
+    }
+    ```
+
+-   ✅ **好的寫法 (分離副作用)**
+    ```typescript
+    // 1. 純函式：核心計算邏輯
+    // 不再依賴任何外部狀態，所有需要的資訊都透過參數傳入
+    function calculateTotal(items: { price: number }[], taxRate: number): number {
+      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+      const tax = subtotal * taxRate;
+      return subtotal + tax;
+    }
+
+    // 2. 不純的程式碼 (系統邊緣)
+    // 負責獲取外部狀態，並呼叫純函式
+    function main() {
+      const items = [{ price: 100 }, { price: 200 }];
+      const currentTaxRate = database.getTaxRate(); // 副作用：讀取資料庫
+      
+      // 呼叫純函式來執行核心邏輯
+      const total = calculateTotal(items, currentTaxRate);
+      
+      console.log(total); // 副作用：寫入控制台
+    }
+    ```
+
+#### C# 範例
+```csharp
+// ❌ 不純的函式
+public class ImpureCalculator
+{
+    public static double TaxRate = 0.2; // 靜態變數 (外部狀態)
+
+    public double Calculate(double price)
+    {
+        return price * (1 + TaxRate); // 依賴外部狀態
+    }
+}
+
+// ✅ 純函式
+public class PureCalculator
+{
+    // 所有依賴都透過參數傳入
+    public double Calculate(double price, double taxRate)
+    {
+        return price * (1 + taxRate);
+    }
+}
+```
+
+#### Python 範例
+```python
+# ❌ 不純的函式
+user_list = [] # 全域變數
+
+def add_user(name):
+    # 副作用：修改了全域變數
+    user_list.append({"name": name})
+
+# ✅ 純函式
+def add_user_pure(users, name):
+    # 回傳一個新的 list，不修改原始的 users
+    return users + [{"name": name}]
+
+# --- 使用 ---
+initial_users = []
+new_users = add_user_pure(initial_users, "Alice")
+# initial_users 仍然是 []
+# new_users 是 [{"name": "Alice"}]
+```
+
+---
+
+## 四、條件判斷 (Conditionals)
 
 ### ✅ 原則
 - 使用早期回傳 (early return)
@@ -426,7 +552,7 @@ bool IsEligible(User? user)
 
 ---
 
-## 四、類別與物件 (Classes & Objects)
+## 五、類別與物件 (Classes & Objects)
 
 ### ✅ 原則
 - 單一職責原則 (SRP)
@@ -458,7 +584,7 @@ class UserValidator:
 
 ---
 
-## 五、註解 (Comments)
+## 六、註解 (Comments)
 
 ### ✅ 原則
 - 說明「為什麼」而非「做什麼」
@@ -470,7 +596,7 @@ index += 1;
 
 ---
 
-## 六、重構與避免重複 (Refactoring)
+## 七、重構與避免重複 (Refactoring)
 
 ```typescript
 const dashboardMap = {
@@ -483,7 +609,7 @@ dashboardMap[user.role]?.();
 
 ---
 
-## 七、錯誤處理 (Error Handling)
+## 八、錯誤處理 (Error Handling)
 
 #### C#
 ```csharp
@@ -512,7 +638,7 @@ class ValidationError(Exception):
 
 ---
 
-## 八、一致性與風格工具 (Consistency)
+## 九、一致性與風格工具 (Consistency)
 
 | 工具              | 功能               | 適用語言   |
 | ----------------- | ------------------ | ---------- |
@@ -524,7 +650,7 @@ class ValidationError(Exception):
 
 ---
 
-## 九、進階：抽象層次與依賴反轉 (Abstraction & Dependency)
+## 十、進階：抽象層次與依賴反轉 (Abstraction & Dependency)
 
 #### TypeScript
 ```typescript
@@ -586,7 +712,7 @@ class UserService:
 
 ---
 
-## 十、進階：模組化與測試性 (Modularization & Testability)
+## 十一、進階：模組化與測試性 (Modularization & Testability)
 
 ```
 src/
@@ -991,7 +1117,7 @@ class User:
   {
       VerifyIdentity();
   }
-````
+```
 ####  Python
 ```python
   # 使用類別組織配置
@@ -1311,7 +1437,7 @@ class PaymentProcessor {
 ```typescript
 // TypeScript
 
-// 1. 定義一個抽象策略介面
+// 1. 定義一個抽象的策略介面
 interface IPaymentStrategy {
     calculateFee(amount: number): number;
 }
@@ -1431,35 +1557,36 @@ public class AreaCalculator
 
 ```csharp
 // C#
+
+// 1. 定義一個抽象的形狀介面
 public interface IShape
 {
-    int GetArea();
+    double GetArea();
 }
 
+// 2. 矩形實作這個介面
 public class Rectangle : IShape
 {
-    public int Width { get; }
-    public int Height { get; }
+    public double Width { get; set; }
+    public double Height { get; set; }
 
-    public Rectangle(int width, int height)
-    {
-        Width = width;
-        Height = height;
-    }
-
-    public int GetArea() => Width * Height;
+    public double GetArea() => Width * Height;
 }
 
+// 3. 正方形也實作這個介面
 public class Square : IShape
 {
-    public int Side { get; }
+    public double Side { get; set; }
 
-    public Square(int side)
-    {
-        Side = side;
-    }
+    public double GetArea() => Side * Side;
+}
 
-    public int GetArea() => Side * Side;
+// --- 使用時 ---
+public void ProcessShape(IShape shape)
+{
+    // 不需要關心是什麼形狀，直接計算面積
+    double area = shape.GetArea();
+    Console.WriteLine($"Shape area: {area}");
 }
 ```
 
@@ -1635,9 +1762,7 @@ class NotificationService {
     }
 }
 ```
-**問題：**
-- `NotificationService` 緊緊依賴於 `EmailSender`，如果要改用其他通知方式（如簡訊、推播），就必須修改 `NotificationService` 的程式碼。
-- 測試 `NotificationService` 時，無法輕易地替換掉 `EmailSender`，導致測試時會真的發送 Email。
+**問題：** 如果現在要新增「LINE Pay」支付，`OrderService` 就必須被修改，甚至可能需要加入 `if/else` 來判斷支付類型，這會讓程式碼越來越複雜。
 
 **✅ 改進：依賴注入 (Dependency Injection)**
 定義一個抽象的 `IMessageSender` 介面，讓 `NotificationService` 依賴這個介面。具體的 `EmailSender` 則從外部「注入」進來。
@@ -1784,7 +1909,7 @@ emailService.notifyUser('test@example.com', 'Hello, world!');
         ```
         現在，`OrderService` 和具體的支付方式完全**解耦**了。未來就算要新增一百種支付方式，`OrderService` 的程式碼也完全不需要更動。
 
-**🎯 總結：** 低耦合讓你的程式碼模組像可替換的零件，你可以輕鬆升級、替換或移除它們，而不會對整個系統造成衝擊。**高內聚、低耦合**是判斷軟體設計優劣的黃金準則。
+**🎯 總結：** 低耦合讓你的程式碼模組像可替換的零件，你可以輕鬆升級、替換或移除它們，而不會對整個系統造成衝擊。
 
 ---
 
