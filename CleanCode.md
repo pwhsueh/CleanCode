@@ -15,22 +15,30 @@
 ---
 
 ## 📖 目錄
+
+### 基礎篇：建立良好習慣
 1. 命名規則 (Naming)
 2. 函式設計 (Functions)
-3. 理解與管理副作用 (Side Effects)
-4. 條件判斷 (Conditionals)
-5. 類別與物件 (Classes & Objects)
-6. 註解原則 (Comments)
-7. 重構與避免重複 (Refactoring)
+3. 條件判斷 (Conditionals)
+4. 註解原則 (Comments)
+5. DRY 原則：避免重複 (Don't Repeat Yourself)
+
+### 進階篇：深化設計思維
+6. 理解與管理副作用 (Side Effects)
+7. 類別與物件 (Classes & Objects)
 8. 錯誤處理 (Error Handling)
-9. 一致性與風格工具 (Consistency)
+9. 魔術數字/字串處理 (Magic Numbers & Strings)
+
+### 架構篇：系統化思考
 10. 撰寫符合語言風格的程式碼 (Idiomatic Code)
-11. 進階：抽象層次與依賴反轉 (Abstraction & Dependency)
-12. 進階：模組化與測試性 (Modularization & Testability)
-13. 進階：不可變性與型別安全 (Immutability & Type Safety)
-14. 進階：魔術數字/字串處理 (Magic Numbers & Strings)
-15. 進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
-16. 附錄：Clean Code Checklist
+11. 一致性與風格工具 (Consistency)
+12. 抽象層次與依賴反轉 (Abstraction & Dependency)
+13. 模組化與測試性 (Modularization & Testability)
+14. 不可變性與型別安全 (Immutability & Type Safety)
+15. 「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
+
+### 附錄
+16. Clean Code Checklist
 
 ---
 
@@ -455,7 +463,7 @@ class GameBoard:
 
 ---
 
-## 三、理解與管理副作用 (Side Effects)
+## 六、理解與管理副作用 (Side Effects)
 
 在函式設計中，最核心也最容易被忽略的概念之一就是「副作用」。理解並妥善管理副作用，是區分普通程式碼與高品質、可維護程式碼的關鍵。
 
@@ -580,7 +588,7 @@ new_users = add_user_pure(initial_users, "Alice")
 
 ---
 
-## 四、條件判斷 (Conditionals)
+## 三、條件判斷 (Conditionals)
 
 條件判斷是程式中最常見的邏輯分支，但如果寫得不好，很容易變成複雜、難以閱讀的巢狀結構 (nested structure)。當 `if` 判斷不斷向右延伸，程式碼在視覺上會形成一個類似箭頭或金字塔的形狀，這種結構也常被戲稱為「波動拳」，大幅降低可讀性。
 
@@ -717,7 +725,7 @@ def is_eligible_bad(user):
 
 ---
 
-## 五、類別與物件 (Classes & Objects)
+## 七、類別與物件 (Classes & Objects)
 
 ### ✅ 原則
 - 單一職責原則 (SRP)
@@ -749,7 +757,7 @@ class UserValidator:
 
 ---
 
-## 六、註解原則 (Comments)
+## 四、註解原則 (Comments)
 
 > 「不要為糟糕的程式碼寫註解——重寫它。」— Brian Kernighan & P.J. Plauger
 
@@ -993,7 +1001,7 @@ def calculate_discount(price: float, customer_tier: str) -> float:
 
 ---
 
-## 七、DRY 原則：避免重複 (Don't Repeat Yourself)
+## 五、DRY 原則：避免重複 (Don't Repeat Yourself)
 
 > 「每一項知識在系統中都必須有單一、明確、權威的表達。」— Andy Hunt & Dave Thomas, The Pragmatic Programmer
 
@@ -1232,7 +1240,7 @@ class ValidationError(Exception):
 
 ---
 
-## 九、一致性與風格工具 (Consistency)
+## 十一、一致性與風格工具 (Consistency)
 
 | 工具              | 功能               | 適用語言   |
 | ----------------- | ------------------ | ---------- |
@@ -1377,7 +1385,7 @@ Idiomatic TypeScript 的核心在於充分運用其強大的型別系統和現�
 
 ---
 
-## 十一、進階：抽象層次與依賴反轉 (Abstraction & Dependency)
+## 十二、抽象層次與依賴反轉 (Abstraction & Dependency)
 
 #### TypeScript
 ```typescript
@@ -1439,7 +1447,7 @@ class UserService:
 
 ---
 
-## 十二、進階：模組化與測試性 (Modularization & Testability)
+## 十三、模組化與測試性 (Modularization & Testability)
 
 ```
 src/
@@ -1451,7 +1459,7 @@ src/
 
 ---
 
-## 十三、進階：不可變性與型別安全 (Immutability & Type Safety)
+## 十四、不可變性與型別安全 (Immutability & Type Safety)
 
 #### TypeScript
 ```typescript
@@ -1476,7 +1484,7 @@ class User:
 ```
 
 ---
-## 十四、進階：魔術數字/字串處理 (Magic Numbers & Strings)
+## 九、魔術數字/字串處理 (Magic Numbers & Strings)
   ❌ 問題範例
 #### TypeScript
 ```typescript
@@ -1999,7 +2007,7 @@ class User:
 
   ---
 
-## 十五、進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
+## 十五、「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
 
 > **核心目標：寫出「高內聚、低耦合」的程式。**
 
