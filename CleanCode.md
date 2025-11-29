@@ -463,131 +463,6 @@ class GameBoard:
 
 ---
 
-## 六、理解與管理副作用 (Side Effects)
-
-在函式設計中，最核心也最容易被忽略的概念之一就是「副作用」。理解並妥善管理副作用，是區分普通程式碼與高品質、可維護程式碼的關鍵。
-
-### ❓ 什麼是副作用 (Side Effect)？
-
-**副作用**是指函式在執行過程中，除了回傳一個值之外，還對**函式外部的可見狀態**產生了任何影響。
-
-常見的副作用包括：
--   修改全域變數或靜態變數。
--   修改傳入的參數（如物件或陣列）。
--   執行任何 I/O 操作，例如：
-    -   寫入檔案或資料庫。
-    -   呼叫外部 API。
-    -   在控制台（Console）上印出日誌。
--   觸發一個事件或訊息。
-
-### ✨ 什麼是純函式 (Pure Function)？
-
-與副作用相對的概念是「純函式」。一個函式如果滿足以下兩個條件，就是純函式：
-1.  **相同的輸入永遠得到相同的輸出**：函式的回傳值只依賴於其輸入參數，不受任何外部狀態影響。
-2.  **沒有可觀察的副作用**：函式不會修改任何外部狀態。
-
-純函式就像一個可靠的數學公式，例如 `sum(2, 3)` 永遠會回傳 `5`，無論你呼叫它多少次，也不會影響到系統的其他部分。
-
-### 💔 為什麼副作用是個問題？
-
--   **不可預測性**：有副作用的函式很難預測其行為。`calculateTotal()` 可能這次回傳 `100`，下次因為某個全域折扣變數被修改而回傳 `80`。
--   **難以測試**：測試有副作用的函式很麻煩。你需要模擬（Mock）資料庫、API，並驗證外部狀態是否被正確修改。而測試純函式只需要給定輸入並斷言輸出即可。
--   **降低可讀性與可維護性**：當你看到一個函式呼叫時，如果它是純函式，你只需要關心它的回傳值。如果它有副作用，你還必須追蹤它可能對系統產生的所有潛在影響。
--   **併發問題**：在多執行緒環境下，如果多個執行緒同時呼叫一個會修改共享狀態的函式，就會產生競爭條件 (Race Condition)，導致不可預期的錯誤。
-
-### 🛠️ 如何管理副作用？
-
-副作用是不可避免的，例如我們總需要將資料存入資料庫。關鍵不是完全消滅副作用，而是**將它們與核心業務邏輯分離**。
-
-**策略：將純邏輯與不純的行為分離**
-
-讓大部分的程式碼（特別是複雜的業務邏輯）保持純粹，並將副作用推向系統的邊緣（例如 Controller、主程式進入點）。
-
-#### 範例：計算購物車總價
-
--   ❌ **不好的寫法 (副作用與邏輯混合)**
-    ```typescript
-    // 全域變數，可能在任何地方被修改
-    let taxRate = 0.05; 
-
-    // 這個函式有副作用：讀取了全域變數 taxRate
-    function calculateTotal(items: { price: number }[]): number {
-      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-      const tax = subtotal * taxRate; // 依賴外部狀態
-      return subtotal + tax;
-    }
-    ```
-
--   ✅ **好的寫法 (分離副作用)**
-    ```typescript
-    // 1. 純函式：核心計算邏輯
-    // 不再依賴任何外部狀態，所有需要的資訊都透過參數傳入
-    function calculateTotal(items: { price: number }[], taxRate: number): number {
-      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-      const tax = subtotal * taxRate;
-      return subtotal + tax;
-    }
-
-    // 2. 不純的程式碼 (系統邊緣)
-    // 負責獲取外部狀態，並呼叫純函式
-    function main() {
-      const items = [{ price: 100 }, { price: 200 }];
-      const currentTaxRate = database.getTaxRate(); // 副作用：讀取資料庫
-      
-      // 呼叫純函式來執行核心邏輯
-      const total = calculateTotal(items, currentTaxRate);
-      
-      console.log(total); // 副作用：寫入控制台
-    }
-    ```
-
-#### C# 範例
-```csharp
-// ❌ 不純的函式
-public class ImpureCalculator
-{
-    public static double TaxRate = 0.2; // 靜態變數 (外部狀態)
-
-    public double Calculate(double price)
-    {
-        return price * (1 + TaxRate); // 依賴外部狀態
-    }
-}
-
-// ✅ 純函式
-public class PureCalculator
-{
-    // 所有依賴都透過參數傳入
-    public double Calculate(double price, double taxRate)
-    {
-        return price * (1 + taxRate);
-    }
-}
-```
-
-#### Python 範例
-```python
-# ❌ 不純的函式
-user_list = [] # 全域變數
-
-def add_user(name):
-    # 副作用：修改了全域變數
-    user_list.append({"name": name})
-
-# ✅ 純函式
-def add_user_pure(users, name):
-    # 回傳一個新的 list，不修改原始的 users
-    return users + [{"name": name}]
-
-# --- 使用 ---
-initial_users = []
-new_users = add_user_pure(initial_users, "Alice")
-# initial_users 仍然是 []
-# new_users 是 [{"name": "Alice"}]
-```
-
----
-
 ## 三、條件判斷 (Conditionals)
 
 條件判斷是程式中最常見的邏輯分支，但如果寫得不好，很容易變成複雜、難以閱讀的巢狀結構 (nested structure)。當 `if` 判斷不斷向右延伸，程式碼在視覺上會形成一個類似箭頭或金字塔的形狀，這種結構也常被戲稱為「波動拳」，大幅降低可讀性。
@@ -721,38 +596,6 @@ def is_eligible_bad(user):
             return False
     else:
         return False
-```
-
----
-
-## 七、類別與物件 (Classes & Objects)
-
-### ✅ 原則
-- 單一職責原則 (SRP)
-- 用封裝保護內部狀態
-
-#### TypeScript
-```typescript
-class UserValidator {
-  static isValidEmail(email: string) {
-    return email.includes("@");
-  }
-}
-```
-
-#### C#
-```csharp
-class UserValidator {
-    public bool IsValidEmail(string email) => email.Contains("@");
-}
-```
-
-#### Python
-```python
-class UserValidator:
-    @staticmethod
-    def is_valid_email(email: str) -> bool:
-        return '@' in email
 ```
 
 ---
@@ -1211,6 +1054,163 @@ DRY 不只是避免「程式碼重複」，更深層的意義是避免「知識�
 
 ---
 
+## 六、理解與管理副作用 (Side Effects)
+
+在函式設計中，最核心也最容易被忽略的概念之一就是「副作用」。理解並妥善管理副作用，是區分普通程式碼與高品質、可維護程式碼的關鍵。
+
+### ❓ 什麼是副作用 (Side Effect)？
+
+**副作用**是指函式在執行過程中，除了回傳一個值之外，還對**函式外部的可見狀態**產生了任何影響。
+
+常見的副作用包括：
+-   修改全域變數或靜態變數。
+-   修改傳入的參數（如物件或陣列）。
+-   執行任何 I/O 操作，例如：
+    -   寫入檔案或資料庫。
+    -   呼叫外部 API。
+    -   在控制台（Console）上印出日誌。
+-   觸發一個事件或訊息。
+
+### ✨ 什麼是純函式 (Pure Function)？
+
+與副作用相對的概念是「純函式」。一個函式如果滿足以下兩個條件，就是純函式：
+1.  **相同的輸入永遠得到相同的輸出**：函式的回傳值只依賴於其輸入參數，不受任何外部狀態影響。
+2.  **沒有可觀察的副作用**：函式不會修改任何外部狀態。
+
+純函式就像一個可靠的數學公式，例如 `sum(2, 3)` 永遠會回傳 `5`，無論你呼叫它多少次，也不會影響到系統的其他部分。
+
+### 💔 為什麼副作用是個問題？
+
+-   **不可預測性**：有副作用的函式很難預測其行為。`calculateTotal()` 可能這次回傳 `100`，下次因為某個全域折扣變數被修改而回傳 `80`。
+-   **難以測試**：測試有副作用的函式很麻煩。你需要模擬（Mock）資料庫、API，並驗證外部狀態是否被正確修改。而測試純函式只需要給定輸入並斷言輸出即可。
+-   **降低可讀性與可維護性**：當你看到一個函式呼叫時，如果它是純函式，你只需要關心它的回傳值。如果它有副作用，你還必須追蹤它可能對系統產生的所有潛在影響。
+-   **併發問題**：在多執行緒環境下，如果多個執行緒同時呼叫一個會修改共享狀態的函式，就會產生競爭條件 (Race Condition)，導致不可預期的錯誤。
+
+### 🛠️ 如何管理副作用？
+
+副作用是不可避免的，例如我們總需要將資料存入資料庫。關鍵不是完全消滅副作用，而是**將它們與核心業務邏輯分離**。
+
+**策略：將純邏輯與不純的行為分離**
+
+讓大部分的程式碼（特別是複雜的業務邏輯）保持純粹，並將副作用推向系統的邊緣（例如 Controller、主程式進入點）。
+
+#### 範例：計算購物車總價
+
+-   ❌ **不好的寫法 (副作用與邏輯混合)**
+    ```typescript
+    // 全域變數，可能在任何地方被修改
+    let taxRate = 0.05; 
+
+    // 這個函式有副作用：讀取了全域變數 taxRate
+    function calculateTotal(items: { price: number }[]): number {
+      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+      const tax = subtotal * taxRate; // 依賴外部狀態
+      return subtotal + tax;
+    }
+    ```
+
+-   ✅ **好的寫法 (分離副作用)**
+    ```typescript
+    // 1. 純函式：核心計算邏輯
+    // 不再依賴任何外部狀態，所有需要的資訊都透過參數傳入
+    function calculateTotal(items: { price: number }[], taxRate: number): number {
+      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+      const tax = subtotal * taxRate;
+      return subtotal + tax;
+    }
+
+    // 2. 不純的程式碼 (系統邊緣)
+    // 負責獲取外部狀態，並呼叫純函式
+    function main() {
+      const items = [{ price: 100 }, { price: 200 }];
+      const currentTaxRate = database.getTaxRate(); // 副作用：讀取資料庫
+      
+      // 呼叫純函式來執行核心邏輯
+      const total = calculateTotal(items, currentTaxRate);
+      
+      console.log(total); // 副作用：寫入控制台
+    }
+    ```
+
+#### C# 範例
+```csharp
+// ❌ 不純的函式
+public class ImpureCalculator
+{
+    public static double TaxRate = 0.2; // 靜態變數 (外部狀態)
+
+    public double Calculate(double price)
+    {
+        return price * (1 + TaxRate); // 依賴外部狀態
+    }
+}
+
+// ✅ 純函式
+public class PureCalculator
+{
+    // 所有依賴都透過參數傳入
+    public double Calculate(double price, double taxRate)
+    {
+        return price * (1 + taxRate);
+    }
+}
+```
+
+#### Python 範例
+```python
+# ❌ 不純的函式
+user_list = [] # 全域變數
+
+def add_user(name):
+    # 副作用：修改了全域變數
+    user_list.append({"name": name})
+
+# ✅ 純函式
+def add_user_pure(users, name):
+    # 回傳一個新的 list，不修改原始的 users
+    return users + [{"name": name}]
+
+# --- 使用 ---
+initial_users = []
+new_users = add_user_pure(initial_users, "Alice")
+# initial_users 仍然是 []
+# new_users 是 [{"name": "Alice"}]
+```
+
+---
+
+## 七、類別與物件 (Classes & Objects)
+
+### ✅ 原則
+- 單一職責原則 (SRP)
+- 用封裝保護內部狀態
+
+#### TypeScript
+```typescript
+class UserValidator {
+  static isValidEmail(email: string) {
+    return email.includes("@");
+  }
+}
+```
+
+#### C#
+```csharp
+class UserValidator {
+    public bool IsValidEmail(string email) => email.Contains("@");
+}
+```
+
+#### Python
+```python
+class UserValidator:
+    @staticmethod
+    def is_valid_email(email: str) -> bool:
+        return '@' in email
+```
+
+---
+
 ## 八、錯誤處理 (Error Handling)
 
 #### C#
@@ -1240,250 +1240,6 @@ class ValidationError(Exception):
 
 ---
 
-## 十一、一致性與風格工具 (Consistency)
-
-| 工具              | 功能               | 適用語言   |
-| ----------------- | ------------------ | ---------- |
-| Prettier          | 排版格式化         | TypeScript |
-| ESLint            | 語法檢查           | TypeScript |
-| EditorConfig      | 統一縮排與換行     | 全語言     |
-| StyleCop / Roslyn | 程式風格檢查       | C#         |
-| Black / flake8    | 自動排版、靜態檢查 | Python     |
-
----
-
-## 十、撰寫符合語言風格的程式碼 (Idiomatic Code)
-
-Clean Code 不僅僅是遵循通用原則，更深一層的境界是**用該語言最自然、最被社群認可的方式來寫程式**。這就是所謂的「Idiomatic Code」。
-
-這不只是「能動」的程式碼，而是「說著流利母語」的程式碼。這樣寫的好處是：
--   **可讀性極高**：同語言的工程師一看就懂，無需轉換思維。
--   **維護成本低**：符合語言的慣例，更容易被工具支持，也更容易找到解決方案。
--   **更安全與精簡**：語言的慣用寫法通常是經過千錘百鍊，能避開許多常見陷阱。
-
-### 🐍 Python: Pythonic Code
-
-「Pythonic」是指符合《The Zen of Python》精神的程式碼風格。它強調簡潔、可讀性和直接。
-
-**範例：遍歷一個列表**
-
--   ❌ **不那麼 Pythonic (C-style loop)**
-    ```python
-    items = ["apple", "banana", "cherry"]
-    for i in range(len(items)):
-        print(items[i])
-    ```
-
--   ✅ **Pythonic**
-    ```python
-    items = ["apple", "banana", "cherry"]
-    # 直接遍歷元素，更直觀
-    for item in items:
-        print(item)
-    ```
-
-**範例：列表生成式 (List Comprehensions)**
-
--   ❌ **不那麼 Pythonic**
-    ```python
-    squares = []
-    for i in range(10):
-        squares.append(i * i)
-    ```
-
--   ✅ **Pythonic**
-    ```python
-    # 一行程式碼表達意圖
-    squares = [i * i for i in range(10)]
-    ```
-
-### 💠 C#: Idiomatic C# / .NET-style Code
-
-現代 C# 的慣用風格大量運用 LINQ、`async/await` 和表達式主體成員 (Expression-bodied members) 來撰寫流暢、聲明式的程式碼。
-
-**範例：篩選集合**
-
--   ❌ **不那麼 Idiomatic (傳統 `foreach`)**
-    ```csharp
-    var adults = new List<User>();
-    foreach (var user in users)
-    {
-        if (user.Age >= 18)
-        {
-            adults.Add(user);
-        }
-    }
-    ```
-
--   ✅ **Idiomatic C# (使用 LINQ)**
-    ```csharp
-    // 使用 LINQ，意圖清晰，程式碼更簡潔
-    var adults = users.Where(user => user.Age >= 18).ToList();
-    ```
-
-**範例：非同步程式碼**
-
--   ❌ **不那麼 Idiomatic (手動處理 Task)**
-    ```csharp
-    public Task<string> GetData()
-    {
-        return Task.Run(() => {
-            // ... 複雜的同步操作 ...
-            return "data";
-        });
-    }
-    ```
-
--   ✅ **Idiomatic C# (使用 async/await)**
-    ```csharp
-    public async Task<string> GetDataAsync()
-    {
-        // 讓編譯器處理非同步的複雜性
-        var result = await _httpClient.GetStringAsync("url");
-        return result;
-    }
-    ```
-
-### 📜 TypeScript: Idiomatic TypeScript
-
-Idiomatic TypeScript 的核心在於充分運用其強大的型別系統和現代 JavaScript 特性（如 ES6+ 語法）來增強程式碼的健壯性和可讀性。
-
-**範例：善用型別與可選鏈 (Optional Chaining)**
-
--   ❌ **不那麼 Idiomatic (手動檢查 null/undefined)**
-    ```typescript
-    if (user && user.profile && user.profile.address) {
-      console.log(user.profile.address.city);
-    }
-    ```
-
--   ✅ **Idiomatic TypeScript**
-    ```typescript
-    const city = user?.profile?.address?.city ?? "Default City";
-    console.log(city);
-    ```
-
-**範例：使用 `map` 和 `filter` 而非 `for` 迴圈**
-
--   ❌ **不那麼 Idiomatic (命令式)**
-    ```typescript
-    const activeUserNames: string[] = [];
-    for (const user of users) {
-      if (user.isActive) {
-        activeUserNames.push(user.name);
-      }
-    }
-    ```
-
--   ✅ **Idiomatic TypeScript (聲明式)**
-    ```typescript
-    // 鏈式呼叫，清楚表達轉換過程
-    const activeUserNames = users
-      .filter(user => user.isActive)
-      .map(user => user.name);
-    ```
-
----
-
-## 十二、抽象層次與依賴反轉 (Abstraction & Dependency)
-
-#### TypeScript
-```typescript
-interface EmailSender {
-  send(email: string, message: string): void;
-}
-
-class SmtpSender implements EmailSender {
-  send(email: string, message: string) {
-    console.log(`SMTP sending to ${email}`);
-  }
-}
-
-class UserService {
-  constructor(private sender: EmailSender) {}
-  register(email: string) {
-    this.sender.send(email, "Welcome!");
-  }
-}
-```
-
-#### C#
-```csharp
-interface IEmailSender {
-    void Send(string email, string message);
-}
-
-class SmtpSender : IEmailSender {
-    public void Send(string email, string message) =>
-        Console.WriteLine($"SMTP sending to {email}");
-}
-
-class UserService {
-    private readonly IEmailSender _sender;
-    public UserService(IEmailSender sender) => _sender = sender;
-    public void Register(string email) => _sender.Send(email, "Welcome!");
-}
-```
-
-#### Python
-```python
-from abc import ABC, abstractmethod
-
-class EmailSender(ABC):
-    @abstractmethod
-    def send(self, email, message): pass
-
-class SmtpSender(EmailSender):
-    def send(self, email, message):
-        print(f"SMTP sending to {email}")
-
-class UserService:
-    def __init__(self, sender: EmailSender):
-        self.sender = sender
-
-    def register(self, email):
-        self.sender.send(email, "Welcome!")
-```
-
----
-
-## 十三、模組化與測試性 (Modularization & Testability)
-
-```
-src/
- ├── domain/      # 業務邏輯
- ├── infra/       # 外部資源 (DB, API)
- ├── app/         # 控制流程
- ├── tests/       # 單元測試
-```
-
----
-
-## 十四、不可變性與型別安全 (Immutability & Type Safety)
-
-#### TypeScript
-```typescript
-function updateUser(user: User) {
-  return { ...user, name: "NewName" }; // immutable
-}
-```
-
-#### C#
-```csharp
-record User(string Name, string Email); // immutable by default
-```
-
-#### Python
-```python
-from dataclasses import dataclass
-
-@dataclass(frozen=True)
-class User:
-    name: str
-    email: str
-```
-
----
 ## 九、魔術數字/字串處理 (Magic Numbers & Strings)
   ❌ 問題範例
 #### TypeScript
@@ -2007,6 +1763,250 @@ class User:
 
   ---
 
+## 十、撰寫符合語言風格的程式碼 (Idiomatic Code)
+
+Clean Code 不僅僅是遵循通用原則，更深一層的境界是**用該語言最自然、最被社群認可的方式來寫程式**。這就是所謂的「Idiomatic Code」。
+
+這不只是「能動」的程式碼，而是「說著流利母語」的程式碼。這樣寫的好處是：
+-   **可讀性極高**：同語言的工程師一看就懂，無需轉換思維。
+-   **維護成本低**：符合語言的慣例，更容易被工具支持，也更容易找到解決方案。
+-   **更安全與精簡**：語言的慣用寫法通常是經過千錘百鍊，能避開許多常見陷阱。
+
+### 🐍 Python: Pythonic Code
+
+「Pythonic」是指符合《The Zen of Python》精神的程式碼風格。它強調簡潔、可讀性和直接。
+
+**範例：遍歷一個列表**
+
+-   ❌ **不那麼 Pythonic (C-style loop)**
+    ```python
+    items = ["apple", "banana", "cherry"]
+    for i in range(len(items)):
+        print(items[i])
+    ```
+
+-   ✅ **Pythonic**
+    ```python
+    items = ["apple", "banana", "cherry"]
+    # 直接遍歷元素，更直觀
+    for item in items:
+        print(item)
+    ```
+
+**範例：列表生成式 (List Comprehensions)**
+
+-   ❌ **不那麼 Pythonic**
+    ```python
+    squares = []
+    for i in range(10):
+        squares.append(i * i)
+    ```
+
+-   ✅ **Pythonic**
+    ```python
+    # 一行程式碼表達意圖
+    squares = [i * i for i in range(10)]
+    ```
+
+### 💠 C#: Idiomatic C# / .NET-style Code
+
+現代 C# 的慣用風格大量運用 LINQ、`async/await` 和表達式主體成員 (Expression-bodied members) 來撰寫流暢、聲明式的程式碼。
+
+**範例：篩選集合**
+
+-   ❌ **不那麼 Idiomatic (傳統 `foreach`)**
+    ```csharp
+    var adults = new List<User>();
+    foreach (var user in users)
+    {
+        if (user.Age >= 18)
+        {
+            adults.Add(user);
+        }
+    }
+    ```
+
+-   ✅ **Idiomatic C# (使用 LINQ)**
+    ```csharp
+    // 使用 LINQ，意圖清晰，程式碼更簡潔
+    var adults = users.Where(user => user.Age >= 18).ToList();
+    ```
+
+**範例：非同步程式碼**
+
+-   ❌ **不那麼 Idiomatic (手動處理 Task)**
+    ```csharp
+    public Task<string> GetData()
+    {
+        return Task.Run(() => {
+            // ... 複雜的同步操作 ...
+            return "data";
+        });
+    }
+    ```
+
+-   ✅ **Idiomatic C# (使用 async/await)**
+    ```csharp
+    public async Task<string> GetDataAsync()
+    {
+        // 讓編譯器處理非同步的複雜性
+        var result = await _httpClient.GetStringAsync("url");
+        return result;
+    }
+    ```
+
+### 📜 TypeScript: Idiomatic TypeScript
+
+Idiomatic TypeScript 的核心在於充分運用其強大的型別系統和現代 JavaScript 特性（如 ES6+ 語法）來增強程式碼的健壯性和可讀性。
+
+**範例：善用型別與可選鏈 (Optional Chaining)**
+
+-   ❌ **不那麼 Idiomatic (手動檢查 null/undefined)**
+    ```typescript
+    if (user && user.profile && user.profile.address) {
+      console.log(user.profile.address.city);
+    }
+    ```
+
+-   ✅ **Idiomatic TypeScript**
+    ```typescript
+    const city = user?.profile?.address?.city ?? "Default City";
+    console.log(city);
+    ```
+
+**範例：使用 `map` 和 `filter` 而非 `for` 迴圈**
+
+-   ❌ **不那麼 Idiomatic (命令式)**
+    ```typescript
+    const activeUserNames: string[] = [];
+    for (const user of users) {
+      if (user.isActive) {
+        activeUserNames.push(user.name);
+      }
+    }
+    ```
+
+-   ✅ **Idiomatic TypeScript (聲明式)**
+    ```typescript
+    // 鏈式呼叫，清楚表達轉換過程
+    const activeUserNames = users
+      .filter(user => user.isActive)
+      .map(user => user.name);
+    ```
+
+---
+
+## 十一、一致性與風格工具 (Consistency)
+
+| 工具              | 功能               | 適用語言   |
+| ----------------- | ------------------ | ---------- |
+| Prettier          | 排版格式化         | TypeScript |
+| ESLint            | 語法檢查           | TypeScript |
+| EditorConfig      | 統一縮排與換行     | 全語言     |
+| StyleCop / Roslyn | 程式風格檢查       | C#         |
+| Black / flake8    | 自動排版、靜態檢查 | Python     |
+
+---
+
+## 十二、抽象層次與依賴反轉 (Abstraction & Dependency)
+
+#### TypeScript
+```typescript
+interface EmailSender {
+  send(email: string, message: string): void;
+}
+
+class SmtpSender implements EmailSender {
+  send(email: string, message: string) {
+    console.log(`SMTP sending to ${email}`);
+  }
+}
+
+class UserService {
+  constructor(private sender: EmailSender) {}
+  register(email: string) {
+    this.sender.send(email, "Welcome!");
+  }
+}
+```
+
+#### C#
+```csharp
+interface IEmailSender {
+    void Send(string email, string message);
+}
+
+class SmtpSender : IEmailSender {
+    public void Send(string email, string message) =>
+        Console.WriteLine($"SMTP sending to {email}");
+}
+
+class UserService {
+    private readonly IEmailSender _sender;
+    public UserService(IEmailSender sender) => _sender = sender;
+    public void Register(string email) => _sender.Send(email, "Welcome!");
+}
+```
+
+#### Python
+```python
+from abc import ABC, abstractmethod
+
+class EmailSender(ABC):
+    @abstractmethod
+    def send(self, email, message): pass
+
+class SmtpSender(EmailSender):
+    def send(self, email, message):
+        print(f"SMTP sending to {email}")
+
+class UserService:
+    def __init__(self, sender: EmailSender):
+        self.sender = sender
+
+    def register(self, email):
+        self.sender.send(email, "Welcome!")
+```
+
+---
+
+## 十三、模組化與測試性 (Modularization & Testability)
+
+```
+src/
+ ├── domain/      # 業務邏輯
+ ├── infra/       # 外部資源 (DB, API)
+ ├── app/         # 控制流程
+ ├── tests/       # 單元測試
+```
+
+---
+
+## 十四、不可變性與型別安全 (Immutability & Type Safety)
+
+#### TypeScript
+```typescript
+function updateUser(user: User) {
+  return { ...user, name: "NewName" }; // immutable
+}
+```
+
+#### C#
+```csharp
+record User(string Name, string Email); // immutable by default
+```
+
+#### Python
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class User:
+    name: str
+    email: str
+```
+
+---
 ## 十五、「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
 
 > **核心目標：寫出「高內聚、低耦合」的程式。**
