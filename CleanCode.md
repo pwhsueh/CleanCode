@@ -24,12 +24,13 @@
 7. 重構與避免重複 (Refactoring)
 8. 錯誤處理 (Error Handling)
 9. 一致性與風格工具 (Consistency)
-10. 進階：抽象層次與依賴反轉 (Abstraction & Dependency)
-11. 進階：模組化與測試性 (Modularization & Testability)
-12. 進階：不可變性與型別安全 (Immutability & Type Safety)
-13. 進階：魔術數字/字串處理 (Magic Numbers & Strings)
-14. 進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
-15. 附錄：Clean Code Checklist
+10. 撰寫符合語言風格的程式碼 (Idiomatic Code)
+11. 進階：抽象層次與依賴反轉 (Abstraction & Dependency)
+12. 進階：模組化與測試性 (Modularization & Testability)
+13. 進階：不可變性與型別安全 (Immutability & Type Safety)
+14. 進階：魔術數字/字串處理 (Magic Numbers & Strings)
+15. 進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
+16. 附錄：Clean Code Checklist
 
 ---
 
@@ -650,7 +651,140 @@ class ValidationError(Exception):
 
 ---
 
-## 十、進階：抽象層次與依賴反轉 (Abstraction & Dependency)
+## 十、撰寫符合語言風格的程式碼 (Idiomatic Code)
+
+Clean Code 不僅僅是遵循通用原則，更深一層的境界是**用該語言最自然、最被社群認可的方式來寫程式**。這就是所謂的「Idiomatic Code」。
+
+這不只是「能動」的程式碼，而是「說著流利母語」的程式碼。這樣寫的好處是：
+-   **可讀性極高**：同語言的工程師一看就懂，無需轉換思維。
+-   **維護成本低**：符合語言的慣例，更容易被工具支持，也更容易找到解決方案。
+-   **更安全與精簡**：語言的慣用寫法通常是經過千錘百鍊，能避開許多常見陷阱。
+
+### 🐍 Python: Pythonic Code
+
+「Pythonic」是指符合《The Zen of Python》精神的程式碼風格。它強調簡潔、可讀性和直接。
+
+**範例：遍歷一個列表**
+
+-   ❌ **不那麼 Pythonic (C-style loop)**
+    ```python
+    items = ["apple", "banana", "cherry"]
+    for i in range(len(items)):
+        print(items[i])
+    ```
+
+-   ✅ **Pythonic**
+    ```python
+    items = ["apple", "banana", "cherry"]
+    # 直接遍歷元素，更直觀
+    for item in items:
+        print(item)
+    ```
+
+**範例：列表生成式 (List Comprehensions)**
+
+-   ❌ **不那麼 Pythonic**
+    ```python
+    squares = []
+    for i in range(10):
+        squares.append(i * i)
+    ```
+
+-   ✅ **Pythonic**
+    ```python
+    # 一行程式碼表達意圖
+    squares = [i * i for i in range(10)]
+    ```
+
+### 💠 C#: Idiomatic C# / .NET-style Code
+
+現代 C# 的慣用風格大量運用 LINQ、`async/await` 和表達式主體成員 (Expression-bodied members) 來撰寫流暢、聲明式的程式碼。
+
+**範例：篩選集合**
+
+-   ❌ **不那麼 Idiomatic (傳統 `foreach`)**
+    ```csharp
+    var adults = new List<User>();
+    foreach (var user in users)
+    {
+        if (user.Age >= 18)
+        {
+            adults.Add(user);
+        }
+    }
+    ```
+
+-   ✅ **Idiomatic C# (使用 LINQ)**
+    ```csharp
+    // 使用 LINQ，意圖清晰，程式碼更簡潔
+    var adults = users.Where(user => user.Age >= 18).ToList();
+    ```
+
+**範例：非同步程式碼**
+
+-   ❌ **不那麼 Idiomatic (手動處理 Task)**
+    ```csharp
+    public Task<string> GetData()
+    {
+        return Task.Run(() => {
+            // ... 複雜的同步操作 ...
+            return "data";
+        });
+    }
+    ```
+
+-   ✅ **Idiomatic C# (使用 async/await)**
+    ```csharp
+    public async Task<string> GetDataAsync()
+    {
+        // 讓編譯器處理非同步的複雜性
+        var result = await _httpClient.GetStringAsync("url");
+        return result;
+    }
+    ```
+
+### 📜 TypeScript: Idiomatic TypeScript
+
+Idiomatic TypeScript 的核心在於充分運用其強大的型別系統和現代 JavaScript 特性（如 ES6+ 語法）來增強程式碼的健壯性和可讀性。
+
+**範例：善用型別與可選鏈 (Optional Chaining)**
+
+-   ❌ **不那麼 Idiomatic (手動檢查 null/undefined)**
+    ```typescript
+    if (user && user.profile && user.profile.address) {
+      console.log(user.profile.address.city);
+    }
+    ```
+
+-   ✅ **Idiomatic TypeScript**
+    ```typescript
+    const city = user?.profile?.address?.city ?? "Default City";
+    console.log(city);
+    ```
+
+**範例：使用 `map` 和 `filter` 而非 `for` 迴圈**
+
+-   ❌ **不那麼 Idiomatic (命令式)**
+    ```typescript
+    const activeUserNames: string[] = [];
+    for (const user of users) {
+      if (user.isActive) {
+        activeUserNames.push(user.name);
+      }
+    }
+    ```
+
+-   ✅ **Idiomatic TypeScript (聲明式)**
+    ```typescript
+    // 鏈式呼叫，清楚表達轉換過程
+    const activeUserNames = users
+      .filter(user => user.isActive)
+      .map(user => user.name);
+    ```
+
+---
+
+## 十一、進階：抽象層次與依賴反轉 (Abstraction & Dependency)
 
 #### TypeScript
 ```typescript
@@ -712,7 +846,7 @@ class UserService:
 
 ---
 
-## 十一、進階：模組化與測試性 (Modularization & Testability)
+## 十二、進階：模組化與測試性 (Modularization & Testability)
 
 ```
 src/
@@ -724,7 +858,7 @@ src/
 
 ---
 
-## 十二、進階：不可變性與型別安全 (Immutability & Type Safety)
+## 十三、進階：不可變性與型別安全 (Immutability & Type Safety)
 
 #### TypeScript
 ```typescript
@@ -749,7 +883,7 @@ class User:
 ```
 
 ---
-## 十三、進階：魔術數字/字串處理 (Magic Numbers & Strings)
+## 十四、進階：魔術數字/字串處理 (Magic Numbers & Strings)
   ❌ 問題範例
 #### TypeScript
 ```typescript
@@ -1272,7 +1406,7 @@ class User:
 
   ---
 
-## 十四、進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
+## 十五、進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維
 判斷軟體架構好壞的**黃金準則**。
 > **核心目標：寫出**「高內聚、低耦合」的程式。
 ### 🧭 S.O.L.I.D. 原則簡介
@@ -1660,21 +1794,20 @@ class RobotWorker(IWorker):
 
 ```python
 # Python
-from abc import ABC, abstractmethod
 
-# 介面1: 會工作的
+# 1. 定義介面：可工作的
 class IWorkable(ABC):
     @abstractmethod
     def work(self):
         pass
 
-# 介面2: 會吃飯的
+# 2. 定義介面：可被餵食的
 class IFeedable(ABC):
     @abstractmethod
     def eat(self):
         pass
 
-# 介面3: 會開會的
+# 3. 定義介面：會開會的
 class IMeetingParticipant(ABC):
     @abstractmethod
     def attend_meeting(self):
@@ -1913,4 +2046,72 @@ emailService.notifyUser('test@example.com', 'Hello, world!');
 
 ---
 
-## 十五、多線程安全性 (Thread Safety)
+## 十六、附錄：Clean Code Checklist
+
+- [ ] **命名**
+  - [ ] 名稱清楚表達意圖
+  - [ ] 避免縮寫與無意義的名稱
+  - [ ] 變數、函式、類別使用正確的詞性
+
+- [ ] **函式設計**
+  - [ ] 函式簡短
+  - [ ] 函式只做一件事
+  - [ ] 區塊內只有一個函式呼叫
+  - [ ] 避免深度巢狀結構
+  - [ ] 避免輸出型參數
+  - [ ] 函式名稱反映目的
+
+- [ ] **副作用管理**
+  - [ ] 理解副作用與純函式
+  - [ ] 副作用與邏輯分離
+
+- [ ] **條件判斷**
+  - [ ] 使用早期回傳
+  - [ ] 避免巢狀結構
+
+- [ ] **類別與物件**
+  - [ ] 單一職責原則
+  - [ ] 用封裝保護內部狀態
+
+- [ ] **註解**
+  - [ ] 說明「為什麼」而非「做什麼」
+
+- [ ] **重構與避免重複**
+  - [ ] 適時重構
+  - [ ] 避免程式碼重複
+
+- [ ] **錯誤處理**
+  - [ ] 使用例外處理機制
+  - [ ] 定義自訂例外類別
+
+- [ ] **一致性與風格工具**
+  - [ ] 使用風格檢查工具
+  - [ ] 團隊內部風格一致
+
+- [ ] **撰寫符合語言風格的程式碼**
+  - [ ] Pythonic Code
+  - [ ] Idiomatic C# / .NET-style Code
+  - [ ] Idiomatic TypeScript
+
+- [ ] **進階：抽象層次與依賴反轉**
+  - [ ] 依賴抽象而非具體實作
+  - [ ] 使用介面與抽象類別
+
+- [ ] **進階：模組化與測試性**
+  - [ ] 適當模組化
+  - [ ] 易於測試
+
+- [ ] **進階：不可變性與型別安全**
+  - [ ] 使用不可變資料結構
+  - [ ] 強型別檢查
+
+- [ ] **進階：魔術數字/字串處理**
+  - [ ] 使用具名常數
+  - [ ] 使用列舉
+
+- [ ] **進階：「高內聚、低耦合」的黃金法則：S.O.L.I.D. 架構思維**
+  - [ ] 單一職責原則
+  - [ ] 開放封閉原則
+  - [ ] 里氏替換原則
+  - [ ] 介面隔離原則
+  - [ ] 依賴反轉原則
