@@ -34,30 +34,69 @@
 
 ## 一、命名規則 (Naming)
 
-### ✅ 原則
-- 名稱要清楚表達意圖（self-explanatory）
-- 不使用模糊或縮寫變數（例如 tmp, x, obj）
-- 函式名稱應使用動詞開頭
+### ✅ 核心原則
 
-### 🧩 範例
+1.  **名稱應清楚表達意圖 (Self-Explanatory)**
+    -   變數名稱應該能回答所有關於它的大問題：它為何存在？它的作用是什麼？它如何被使用？
+    -   好的命名讓程式碼讀起來像一篇流暢的文章，而不是需要解密的謎題。
 
-#### C#
-```csharp
-var currentDate = DateTime.Now;
-void CalculateTotalPrice(decimal basePrice, decimal taxRate) { }
-```
+2.  **避免縮寫與無意義的名稱 (Avoid Abbreviations & Disinformation)**
+    -   **不要使用縮寫**：除非是廣為人知的慣例 (如 `db` 代表 `database`)，否則應使用全名。`userRegistrationService` 遠比 `usrRegSvc` 好。
+    -   **避免單字母變數**：除了在迴圈中的 `i`, `j`, `k` 等計數器，應避免使用 `a`, `b`, `x` 等單字母變數。
+    -   **不要提供錯誤線索**：例如，一個變數名為 `userList`，但它的型別卻不是 `List` 或 `Array`，這會誤導讀者。
 
-#### TypeScript
-```typescript
-let userIds = [1, 2, 3];
-function processUserLogin(user: User) {}
-```
+3.  **變數、函式、類別的詞性 (Use Correct Parts of Speech)**
+    -   **變數與類別應為名詞或名詞片語**：它們代表物件或概念。
+        -   `customer`, `shoppingCart`, `userAccount`
+    -   **函式應為動詞或動詞片語**：它們代表動作。
+        -   `postPayment()`, `deletePage()`, `save()`
+    -   **布林值應像一個判斷題**：讓讀者能直覺地回答「是」或「否」。
 
-#### Python
-```python
-user_count = 10
-def calculate_discount(price, rate): return price * (1 - rate)
-```
+### 🧩 具體實踐與範例
+
+**1. 布林值命名：使用 `is`, `has`, `can`, `should` 開頭**
+
+布林值的命名應該讓 `if (variable)` 讀起來像一個流暢的英文句子。
+
+| 語言           | 範例                                                                                                   |
+| :------------- | :----------------------------------------------------------------------------------------------------- |
+| **C#**         | `bool isVisible = true;`<br/>`bool hasChildren = false;`<br/>`if (canExecute) { ... }`                 |
+| **TypeScript** | `let isVisible: boolean = true;`<br/>`let hasChildren: boolean = false;`<br/>`if (canExecute) { ... }` |
+| **Python**     | `is_visible = True`<br/>`has_children = False`<br/>`if can_execute: ...`                               |
+
+**2. 變數與類別命名：使用名詞**
+
+變數代表資料，類別代表藍圖，都應使用名詞。
+
+| 語言           | 範例                                                                                                        |
+| :------------- | :---------------------------------------------------------------------------------------------------------- |
+| **C#**         | `string customerName = "John";`<br/>`int userCount = 10;`<br/>`class OrderProcessor { ... }`                |
+| **TypeScript** | `let customerName: string = "John";`<br/>`const userCount: number = 10;`<br/>`class OrderProcessor { ... }` |
+| **Python**     | `customer_name = "John"`<br/>`user_count = 10`<br/>`class OrderProcessor: ...`                              |
+
+**3. 函式命名：使用動詞**
+
+函式代表一個動作，應以動詞開頭，清楚說明它「做什麼」。
+
+| 語言           | 範例                                                                                                                |
+| :------------- | :------------------------------------------------------------------------------------------------------------------ |
+| **C#**         | `void CalculateTotalPrice(...)`<br/>`User GetUserById(int id)`<br/>`void SaveChanges()`                             |
+| **TypeScript** | `function calculateTotalPrice(...)`<br/>`function getUserById(id: number): User`<br/>`function saveChanges(): void` |
+| **Python**     | `def calculate_total_price(...)`<br/>`def get_user_by_id(id)`<br/>`def save_changes()`                              |
+
+**4. 透過文字表達概念，而非實作細節**
+
+好的命名應該描述「業務意圖」，而不是「資料結構」或「演算法」。這讓程式碼更有彈性，當底層實作改變時，不需要修改呼叫端的程式碼。
+
+- ❌ **不好的命名 (透露實作細節)**
+  - `userDict`: 透露了它是一個 Dictionary。
+  - `customerArray`: 透露了它是一個 Array。
+  - `encryptPasswordWithMD5()`: 將加密演算法寫死在名稱中。如果未來要更換成 `SHA256`，函式名稱就變得不準確，容易造成誤解。
+
+- ✅ **好的命名 (描述業務概念)**
+  - `usersById`: 描述了「用 ID 索引使用者」的意圖。
+  - `activeCustomers`: 描述了「活躍客戶」的集合。
+  - `encryptPassword()`: 只描述「加密密碼」這個核心概念。底層使用何種演算法，是實作細節，不應暴露給呼叫者。
 
 ---
 
@@ -72,15 +111,162 @@ def calculate_discount(price, rate): return price * (1 - rate)
 - 如果能用文字描述函式功能時，包含了「不同層次」的抽象概念步驟，就表示做了不只一件事
 - 所有行為應該在「同個層級」
 
-#### 3. 區塊和縮排
-- If、else、while等語句應該只有一行
-- 函式不應該包含過多巢狀結構  
-- 縮排程度應該只包含1-2層
+#### 3. 區塊與縮排 (Blocks and Indenting)
 
-#### 4. 避免輸出型參數
-- 不使用會修改傳入參數的函式
-- 優先使用物件導向方式（如 `this`、`self`）而非傳遞 reference
-- 參數數量 ≤ 3
+-   **將邏輯提煉成函式**：`if`, `else`, `while` 等控制結構的區塊 (body) 應該只包含**一個函式呼叫**。這並非指大括號 `{}` 內只能寫一行程式碼，而是鼓勵將區塊內的複雜邏輯提煉 (extract) 成一個新的、有清楚命名的函式。
+-   **避免深度巢狀結構**：函式內的縮排層級應盡量保持在 1-2 層。過深的巢狀結構通常意味著函式承擔了過多職責，應考慮重構。
+
+**範例 1：提煉 `if` 區塊的邏輯**
+
+-   ❌ **不好的寫法 (區塊內有多行邏輯)**
+    ```typescript
+    function processPayment(payment: Payment, user: User) {
+      if (payment.status === 'SUCCESS') {
+        // 1. 更新訂單歷史
+        user.orderHistory.push(payment.orderId);
+        // 2. 增加紅利點數
+        user.points += calculateBonus(payment.amount);
+        // 3. 發送確認郵件
+        emailService.send(user.email, 'Payment Successful');
+      } else {
+        // ... 處理失敗的邏輯
+      }
+    }
+    ```
+
+-   ✅ **好的寫法 (區塊內只有一個函式呼叫)**
+    ```typescript
+    // 提煉出來的新函式，職責單一
+    function handleSuccessfulPayment(payment: Payment, user: User) {
+      user.orderHistory.push(payment.orderId);
+      user.points += calculateBonus(payment.amount);
+      emailService.send(user.email, 'Payment Successful');
+    }
+
+    // 原本的函式變得非常簡潔易讀
+    function processPayment(payment: Payment, user: User) {
+      if (payment.status === 'SUCCESS') {
+        // if 區塊內只有一行，清楚表達了意圖
+        handleSuccessfulPayment(payment, user);
+      } else {
+        handleFailedPayment(payment, user); // 同理，失敗的邏輯也應提煉
+      }
+    }
+    ```
+
+**範例 2：透過「衛述句 (Guard Clauses)」和「提煉函式」來扁平化巢狀結構**
+
+-   ❌ **不好的寫法 (深度巢狀)**
+    ```typescript
+    // 縮排層級過多，難以閱讀
+    function generateReport(user: User, orders: Order[]) {
+      // 第 1 層
+      if (user) {
+        // 第 2 層
+        if (user.isActive) {
+          // 第 3 層
+          if (user.role === 'Admin' || user.role === 'Manager') {
+            let reportLines: string[] = [];
+            // 第 4 層
+            for (const order of orders) {
+              // 第 5 層
+              if (order.amount > 1000) {
+                reportLines.push(`High value order: ${order.id}`);
+              }
+            }
+            return reportLines;
+          } else {
+            return ["Error: Insufficient permissions"];
+          }
+        } else {
+          return ["Error: User is not active"];
+        }
+      } else {
+        return ["Error: User not found"];
+      }
+    }
+    ```
+
+-   ✅ **好的寫法 (扁平化)**
+    ```typescript
+    // 1. 使用衛述句 (Guard Clauses) 提早回傳，處理錯誤或邊界情況
+    function generateReport(user: User, orders: Order[]) {
+      if (!user) return ["Error: User not found"];
+      if (!user.isActive) return ["Error: User is not active"];
+      if (!isPrivilegedUser(user)) return ["Error: Insufficient permissions"];
+    
+      // 核心邏輯變得清晰，不再被 if-else 包圍
+      return generateHighValueOrderLines(orders);
+    }
+    
+    // 2. 將權限判斷和報表生成邏輯提煉成獨立函式
+    function isPrivilegedUser(user: User): boolean {
+      return user.role === 'Admin' || user.role === 'Manager';
+    }
+    
+    function generateHighValueOrderLines(orders: Order[]): string[] {
+      const HIGH_VALUE_THRESHOLD = 1000;
+      return orders
+        .filter(order => order.amount > HIGH_VALUE_THRESHOLD)
+        .map(order => `High value order: ${order.id}`);
+    }
+    ```
+
+#### 4. 避免輸出型參數 (Avoid Output Parameters)
+
+「輸出型參數」是指函式不透過 `return` 回傳結果，而是直接修改傳入的參數（通常是物件或陣列）來達成目的。這種作法會產生「副作用」(Side Effect)，讓程式碼變得不直觀且難以追蹤。
+
+**為什麼要避免？**
+-   **違反直覺**：我們通常預期函式是接收輸入 (`input`)，然後回傳輸出 (`output`)。如果一個函式偷偷修改了傳入的參數，會讓呼叫者感到困惑。
+-   **降低可讀性**：看到 `append(element, list)` 這樣的呼叫，我們無法確定 `list` 是否被改變了，必須去讀函式內部的實作。
+-   **難以測試與除錯**：有副作用的函式不易進行單元測試，因為需要驗證傳入的參數狀態是否被正確修改。
+
+**範例：**
+
+-   ❌ **不好的寫法 (修改傳入的陣列)**
+    ```typescript
+    // 這個函式會直接修改傳入的 `items` 陣列
+    function addToList(items: string[], newItem: string) {
+      items.push(newItem);
+    }
+    
+    const userList = ["Alice", "Bob"];
+    addToList(userList, "Charlie"); // userList 現在變成 ["Alice", "Bob", "Charlie"]
+    // 呼叫者可能沒預期到 userList 被改變了
+    ```
+
+-   ✅ **好的寫法 1：回傳一個新的陣列 (Immutability)**
+    ```typescript
+    // 回傳一個包含新項目的全新陣列，不修改原始陣列
+    function addToList(items: string[], newItem: string): string[] {
+      return [...items, newItem];
+    }
+    
+    const userList = ["Alice", "Bob"];
+    const newUserList = addToList(userList, "Charlie");
+    // userList 仍然是 ["Alice", "Bob"]
+    // newUserList 是 ["Alice", "Bob", "Charlie"]，意圖非常明確
+    ```
+
+-   ✅ **好的寫法 2：使用物件導向方法**
+    如果操作的對象是一個核心物件，應將操作封裝成該物件的方法。這樣，呼叫者就能清楚地知道是在操作該物件的狀態。
+    ```typescript
+    class ShoppingCart {
+      private items: string[] = [];
+    
+      // 方法的意圖很清楚：就是要修改這個購物車的內部狀態
+      addItem(item: string): void {
+        this.items.push(item);
+      }
+    
+      getItems(): readonly string[] {
+        return this.items;
+      }
+    }
+    
+    const cart = new ShoppingCart();
+    cart.addItem("Apple"); // 呼叫者明確知道 cart 的狀態會被改變
+    ```
 
 #### 5. 函式名稱反映目的，而非細節
 
