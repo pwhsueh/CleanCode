@@ -333,7 +333,125 @@ class GameBoard:
 
 用文字描述函式功能：
 - ✅ **好例子**：「取得被插旗的地雷格子」- 清楚的單一目的
-- ❌ **壞例子**：「建立資料庫連線，取得被插旗的地雷格子，並寫入日誌」- 包含不同抽象層次的步驟
+- ❌ **壞例子**：「建立資料庫連線,取得被插旗的地雷格子，並寫入日誌」- 包含不同抽象層次的步驟
+
+### 6. 函式參數的數量 (Number of Arguments)
+
+函式的參數數量是衡量其複雜性的重要指標。
+
+**核心原則：**
+-   **0-2 個參數是理想的**：這是最容易理解和測試的情況。
+-   **3 個參數需要有充分理由**：應謹慎使用。
+-   **超過 3 個參數是個警訊 (Code Smell)**：通常代表函式可能承擔了過多職責，或是可以進行更好的封裝。
+
+**為什麼過多的參數是個問題？**
+-   **降低可讀性**：`createUser(name, age, email, address, role, isActive)` 這樣的函式呼叫，很難記住每個參數的順序和意義。
+-   **增加測試複雜度**：你需要為參數的各種組合撰寫測試案例，數量會呈指數級增長。
+-   **容易出錯**：傳遞參數時很容易搞錯順序，尤其當它們的型別相同時 (例如多個 `string` 參數)。
+
+**解決方案：引入參數物件 (Introduce Parameter Object)**
+
+當你發現多個參數總是結伴出現時，就應該將它們封裝成一個獨立的類別或介面。
+
+**範例：**
+
+-   ❌ **不好的寫法 (過多參數)**
+    ```typescript
+    function createChart(
+      type: 'line' | 'bar', 
+      data: number[], 
+      color: string, 
+      width: number, 
+      height: number, 
+      showLegend: boolean
+    ) {
+      // ...
+    }
+    ```
+
+-   ✅ **好的寫法 (使用參數物件)**
+
+    **TypeScript**
+    ```typescript
+    // 1. 定義參數物件
+    interface ChartOptions {
+      type: 'line' | 'bar';
+      data: number[];
+      color?: string;
+      width?: number;
+      height?: number;
+      showLegend?: boolean;
+    }
+
+    // 2. 函式只接收一個物件
+    function createChart(options: ChartOptions) {
+      const { type, data, color = '#000000', width = 600, height = 400, showLegend = true } = options;
+      // ...
+    }
+
+    // 呼叫時更清晰，且順序無關
+    createChart({
+      type: 'bar',
+      data: [1, 2, 3],
+      color: 'blue'
+    });
+    ```
+
+    **C#**
+    ```csharp
+    // 1. 定義參數物件
+    public class ChartOptions
+    {
+        public string Type { get; set; }
+        public IEnumerable<int> Data { get; set; }
+        public string Color { get; set; } = "#000000";
+        public int Width { get; set; } = 600;
+        public int Height { get; set; } = 400;
+        public bool ShowLegend { get; set; } = true;
+    }
+
+    // 2. 函式接收參數物件
+    public void CreateChart(ChartOptions options)
+    {
+        // ... 使用 options.Type, options.Data ...
+    }
+
+    // 呼叫時使用物件初始化器，非常清晰
+    CreateChart(new ChartOptions 
+    {
+        Type = "bar",
+        Data = new[] { 1, 2, 3 },
+        Color = "blue"
+    });
+    ```
+
+    **Python**
+    ```python
+    from dataclasses import dataclass
+    from typing import List
+
+    # 1. 定義參數物件 (使用 dataclass)
+    @dataclass
+    class ChartOptions:
+        type: str
+        data: List[int]
+        color: str = "#000000"
+        width: int = 600
+        height: int = 400
+        show_legend: bool = True
+
+    # 2. 函式接收參數物件
+    def create_chart(options: ChartOptions):
+        # ... 使用 options.type, options.data ...
+        pass
+
+    # 呼叫時更具可讀性
+    create_chart(ChartOptions(
+        type='bar',
+        data=[1, 2, 3],
+        color='blue'
+    ))
+    ```
 
 ---
 
