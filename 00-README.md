@@ -22,12 +22,12 @@
 3. [條件判斷 (Conditionals)](./03-Conditionals.md)
 4. [註解原則 (Comments)](./04-Comments.md)
 5. [DRY 原則:避免重複 (Don't Repeat Yourself)](./05-DRY.md)
+6. [魔術數字/字串處理 (Magic Numbers & Strings)](./09-MagicNumbers.md)
 
 ### 進階篇:深化設計思維
-6. [理解與管理副作用 (Side Effects)](./06-SideEffects.md)
-7. [類別與物件 (Classes & Objects)](./07-Classes.md)
-8. [錯誤處理 (Error Handling)](./08-ErrorHandling.md)
-9. [魔術數字/字串處理 (Magic Numbers & Strings)](./09-MagicNumbers.md)
+7. [理解與管理副作用 (Side Effects)](./06-SideEffects.md)
+8. [類別與物件 (Classes & Objects)](./07-Classes.md)
+9. [錯誤處理 (Error Handling)](./08-ErrorHandling.md)
 
 ### 架構篇:系統化思考
 10. [撰寫符合語言風格的程式碼 (Idiomatic Code)](./10-IdiomaticCode.md)
