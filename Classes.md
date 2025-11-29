@@ -1,4 +1,4 @@
-## 七、類別與物件 (Classes & Objects)
+## 八、類別與物件 (Classes & Objects)
 
 > 「類別應該簡短！」— Robert C. Martin
 

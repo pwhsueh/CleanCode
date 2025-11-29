@@ -1,4 +1,4 @@
-## 八、錯誤處理 (Error Handling)
+## 九、錯誤處理 (Error Handling)
 
 ### 🎯 Clean Code 核心心法
 

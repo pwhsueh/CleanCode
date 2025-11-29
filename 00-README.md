@@ -17,27 +17,27 @@
 ## 📖 目錄
 
 ### 基礎篇:建立良好習慣
-1. [命名規則 (Naming)](./01-Naming.md)
-2. [函式設計 (Functions)](./02-Functions.md)
-3. [條件判斷 (Conditionals)](./03-Conditionals.md)
-4. [註解原則 (Comments)](./04-Comments.md)
-5. [DRY 原則:避免重複 (Don't Repeat Yourself)](./05-DRY.md)
-6. [魔術數字/字串處理 (Magic Numbers & Strings)](./09-MagicNumbers.md)
+1. [命名規則 (Naming)](./Naming.md)
+2. [函式設計 (Functions)](./Functions.md)
+3. [條件判斷 (Conditionals)](./Conditionals.md)
+4. [註解原則 (Comments)](./Comments.md)
+5. [DRY 原則:避免重複 (Don't Repeat Yourself)](./DRY.md)
+6. [魔術數字/字串處理 (Magic Numbers & Strings)](./MagicNumbers.md)
 
 ### 進階篇:深化設計思維
-7. [理解與管理副作用 (Side Effects)](./06-SideEffects.md)
-8. [類別與物件 (Classes & Objects)](./07-Classes.md)
-9. [錯誤處理 (Error Handling)](./08-ErrorHandling.md)
+7. [理解與管理副作用 (Side Effects)](./SideEffects.md)
+8. [類別與物件 (Classes & Objects)](./Classes.md)
+9. [錯誤處理 (Error Handling)](./ErrorHandling.md)
 
 ### 架構篇:系統化思考
-10. [撰寫符合語言風格的程式碼 (Idiomatic Code)](./10-IdiomaticCode.md)
-11. [一致性與風格工具 (Consistency)](./11-Consistency.md)
-12. [抽象層次與依賴反轉 (Abstraction & Dependency)](./12-Abstraction.md)
-13. [模組化與測試性 (Modularization & Testability)](./13-Modularization.md)
-14. [不可變性與型別安全 (Immutability & Type Safety)](./14-Immutability.md)
-15. [「高內聚、低耦合」的黃金法則:S.O.L.I.D. 架構思維](./15-SOLID.md)
+10. [撰寫符合語言風格的程式碼 (Idiomatic Code)](./IdiomaticCode.md)
+11. [一致性與風格工具 (Consistency)](./Consistency.md)
+12. [抽象層次與依賴反轉 (Abstraction & Dependency)](./Abstraction.md)
+13. [模組化與測試性 (Modularization & Testability)](./Modularization.md)
+14. [不可變性與型別安全 (Immutability & Type Safety)](./Immutability.md)
+15. [「高內聚、低耦合」的黃金法則:S.O.L.I.D. 架構思維](./SOLID.md)
 
 ### 附錄
-16. [Clean Code Checklist](./16-Checklist.md)
+16. [Clean Code Checklist](./Checklist.md)
 
 ---

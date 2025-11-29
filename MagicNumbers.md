@@ -1,4 +1,4 @@
-## 九、魔術數字/字串處理 (Magic Numbers & Strings)
+## 六、魔術數字/字串處理 (Magic Numbers & Strings)
 
 > 「任何未經命名的數字或字串都是對未來維護者的詛咒。」
 
