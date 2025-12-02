@@ -1,6 +1,6 @@
 ## 五、DRY 原則：避免重複 (Don't Repeat Yourself)
 
-> 「每一項知識在系統中都必須有單一、明確、權威的表達。」— Andy Hunt & Dave Thomas, The Pragmatic Programmer
+> 「每一項知識在系統中都必須有單一、明確、權威的表達。In a system, every piece of knowledge must have a single, unambiguous, authoritative representation.」— Andy Hunt & Dave Thomas, The Pragmatic Programmer
 
 ### ❓ 什麼是 DRY？
 
