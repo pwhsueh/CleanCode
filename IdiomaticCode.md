@@ -11,36 +11,41 @@ Clean Code 不僅僅是遵循通用原則，更深一層的境界是**用該語�
 
 「Pythonic」是指符合《The Zen of Python》精神的程式碼風格。它強調簡潔、可讀性和直接。
 
-**範例：遍歷一個列表**
-
--   ❌ **不那麼 Pythonic (C-style loop)**
-    ```python
-    items = ["apple", "banana", "cherry"]
-    for i in range(len(items)):
-        print(items[i])
-    ```
-
--   ✅ **Pythonic**
-    ```python
-    items = ["apple", "banana", "cherry"]
-    # 直接遍歷元素，更直觀
-    for item in items:
-        print(item)
-    ```
-
-**範例：列表生成式 (List Comprehensions)**
+**範例：列表生成式 (List Comprehensions) - 過濾與轉換**
 
 -   ❌ **不那麼 Pythonic**
     ```python
-    squares = []
-    for i in range(10):
-        squares.append(i * i)
+    # 傳統迴圈：找出所有大於 5 的數字並平方
+    numbers = [1, 3, 5, 7, 9, 2, 4, 6, 8]
+    result = []
+    for num in numbers:
+        if num > 5:
+            result.append(num ** 2)
     ```
 
--   ✅ **Pythonic**
+-   ✅ **Pythonic (使用 List Comprehension)**
     ```python
-    # 一行程式碼表達意圖
-    squares = [i * i for i in range(10)]
+    # 一行程式碼清晰表達意圖：過濾並轉換
+    numbers = [1, 3, 5, 7, 9, 2, 4, 6, 8]
+    result = [num ** 2 for num in numbers if num > 5]
+    ```
+
+**範例：字典生成式 (Dict Comprehensions)**
+
+-   ❌ **不那麼 Pythonic**
+    ```python
+    # 建立姓名與長度的對應字典
+    names = ["Alice", "Bob", "Charlie"]
+    name_lengths = {}
+    for name in names:
+        name_lengths[name] = len(name)
+    ```
+
+-   ✅ **Pythonic (使用 Dict Comprehension)**
+    ```python
+    # 簡潔的字典生成
+    names = ["Alice", "Bob", "Charlie"]
+    name_lengths = {name: len(name) for name in names}
     ```
 
 ### 💠 C#: Idiomatic C# / .NET-style Code
