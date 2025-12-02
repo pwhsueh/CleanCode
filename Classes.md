@@ -679,4 +679,4 @@ class Duck implements Eater, Flyer, Swimmer {
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：錯誤處理 →](./08-ErrorHandling.md)
+[← 回目錄](./README.md) | [下一章：錯誤處理 →](./ErrorHandling.md)

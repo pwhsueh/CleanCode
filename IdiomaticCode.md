@@ -131,4 +131,4 @@ Idiomatic TypeScript 的核心在於充分運用其強大的型別系統和現�
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：一致性 →](./11-Consistency.md)
+[← 回目錄](./README.md) | [下一章：一致性 →](./Consistency.md)

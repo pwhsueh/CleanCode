@@ -1175,4 +1175,4 @@ with open('config.yaml', 'r') as f:
 
   ---
 
-[← 回目錄](./00-README.md) | [下一章：語言風格 →](./10-IdiomaticCode.md)
+[← 回目錄](./README.md) | [下一章：副作用 →](./SideEffects.md)

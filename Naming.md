@@ -66,4 +66,4 @@
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：函式設計 →](./02-Functions.md)
+[← 回目錄](./README.md) | [下一章：函式設計 →](./Functions.md)

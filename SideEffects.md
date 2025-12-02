@@ -123,4 +123,4 @@ new_users = add_user_pure(initial_users, "Alice")
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：類別與物件 →](./07-Classes.md)
+[← 回目錄](./README.md) | [下一章：類別與物件 →](./Classes.md)

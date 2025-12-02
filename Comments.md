@@ -242,4 +242,4 @@ def calculate_discount(price: float, customer_tier: str) -> float:
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：DRY原則 →](./05-DRY.md)
+[← 回目錄](./README.md) | [下一章：DRY原則 →](./DRY.md)

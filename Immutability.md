@@ -939,4 +939,4 @@ async function fetchUser(id: string): Promise<Readonly<User>> {
 **記住**：「Make it work, make it right, make it fast」— Kent Beck。不可變性與型別安全是「make it right」的重要手段。
 
 ---
-[← 回目錄](./00-README.md) | [下一章：SOLID →](./15-SOLID.md)
+[← 回目錄](./README.md) | [下一章：SOLID →](./SOLID.md)

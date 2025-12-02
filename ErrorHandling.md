@@ -992,4 +992,4 @@ try {
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：魔術數字 →](./09-MagicNumbers.md)
+[← 回目錄](./README.md) | [下一章：語言風格 →](./IdiomaticCode.md)

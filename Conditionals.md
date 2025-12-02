@@ -135,4 +135,4 @@ def is_eligible_bad(user):
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：註解原則 →](./04-Comments.md)
+[← 回目錄](./README.md) | [下一章：註解原則 →](./Comments.md)

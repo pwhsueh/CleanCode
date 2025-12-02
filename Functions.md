@@ -351,4 +351,4 @@ class GameBoard:
 
 ---
 
-[← 回目錄](./00-README.md) | [下一章：條件判斷 →](./03-Conditionals.md)
+[← 回目錄](./README.md) | [下一章：條件判斷 →](./Conditionals.md)
