@@ -1,6 +1,6 @@
 ## 四、註解原則 (Comments)
 
-> 「不要為糟糕的程式碼寫註解——重寫它。」— Brian Kernighan & P.J. Plauger
+> 「不要為糟糕的程式碼寫註解——重寫它。Don't comment bad code – rewrite it.」— Brian Kernighan & P.J. Plauger
 
 註解是一把雙面刃。好的註解能夠傳達重要的背景資訊或設計決策，但糟糕的註解會變成技術債務，誤導開發者，甚至比沒有註解更糟。
 
