@@ -6,6 +6,107 @@
     -   變數名稱應該能回答所有關於它的大問題：它為何存在？它的作用是什麼？它如何被使用？
     -   好的命名讓程式碼讀起來像一篇流暢的文章，而不是需要解密的謎題。
 
+    **範例對比：**
+
+    ❌ **不好的範例**
+    ```typescript
+    // 無法理解變數用途
+    let d = new Date();
+    let temp = user.name;
+    let data = fetchData();
+
+    // 需要註解才能理解
+    let elapsed = 0; // elapsed time in days
+
+    // 縮寫讓人困惑
+    let usrMgr = new UserManager();
+    let prjCfg = getProjectConfig();
+
+    // 函式名稱不清楚
+    function process(items) { ... }
+    function handle(data) { ... }
+    function doStuff() { ... }
+    ```
+
+    ```python
+    # 單字母變數（非迴圈）
+    a = calculate_discount()
+    x = get_user_data()
+
+    # 無意義的名稱
+    def get_them():
+        list1 = []
+        for x in the_list:
+            if x[0] == 4:
+                list1.append(x)
+        return list1
+    ```
+
+    ```csharp
+    // 模糊不清的命名
+    int value;
+    string str;
+    List<int> list;
+
+    // 過度縮寫
+    var usrAcc = GetUsrAcc();
+    var ordDtl = FetchOrdDtl();
+    ```
+
+    ✅ **好的範例**
+    ```typescript
+    // 清楚表達意圖
+    let currentDate = new Date();
+    let userName = user.name;
+    let customerOrders = fetchCustomerOrders();
+
+    // 名稱本身就是文件
+    let elapsedTimeInDays = 0;
+
+    // 使用完整名稱
+    let userManager = new UserManager();
+    let projectConfig = getProjectConfig();
+
+    // 函式名稱明確動作
+    function calculateDiscountedPrice(items: Item[]): number { ... }
+    function validateUserInput(input: string): boolean { ... }
+    function sendConfirmationEmail(recipient: string): void { ... }
+    ```
+
+    ```python
+    # 描述性的變數名
+    discount_percentage = calculate_discount()
+    user_profile = get_user_data()
+
+    # 清楚的業務邏輯
+    def get_flagged_cells():
+        flagged_cells = []
+        for cell in game_board:
+            if cell.is_flagged:
+                flagged_cells.append(cell)
+        return flagged_cells
+    ```
+
+    ```csharp
+    // 明確的商業概念
+    decimal totalPrice;
+    string customerEmail;
+    List<Order> pendingOrders;
+
+    // 完整且有意義的名稱
+    var userAccount = GetUserAccount();
+    var orderDetails = FetchOrderDetails();
+    ```
+
+    **💡 關鍵差異**
+    
+    好的命名讓你能直接理解：
+    - **為什麼**這個變數存在
+    - **什麼**資料被儲存
+    - **如何**使用這個變數
+
+    不好的命名會讓你問：「這是什麼？」「這用來做什麼？」
+
 2.  **避免縮寫與無意義的名稱 (Avoid Abbreviations & Disinformation)**
     -   **不要使用縮寫**：除非是廣為人知的慣例 (如 `db` 代表 `database`)，否則應使用全名。`userRegistrationService` 遠比 `usrRegSvc` 好。
     -   **避免單字母變數**：除了在迴圈中的 `i`, `j`, `k` 等計數器，應避免使用 `a`, `b`, `x` 等單字母變數。
