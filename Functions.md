@@ -6,8 +6,94 @@
 > 關於函式的首要準則，就是要簡短。第二項準則，就是要比第一項的簡短函式還要更簡短。
 
 #### 2. 只做一件事（Single Responsibility）
-- 如果能用文字描述函式功能時，包含了「不同層次」的抽象概念步驟，就表示做了不只一件事
-- 所有行為應該在「同個層級」
+
+**抽象層級定義：**
+
+| 層級 | 說明 | 範例 |
+|:---|:---|:---|
+| **高階 (High-Level)** | 業務概念、使用者意圖、系統行為。描述「做什麼」而非「如何做」 | `processOrder()`, `authenticateUser()`, `generateReport()` |
+| **中階 (Mid-Level)** | 業務邏輯、領域規則、驗證。介於業務意圖與技術實作之間 | `validateEmail()`, `calculateDiscount()`, `isEligibleForRefund()` |
+| **低階 (Low-Level)** | 技術細節、資料操作、演算法實作。接近程式語言底層的操作 | `parseJSON()`, `splitString()`, `connectToDatabase()`, `appendToArray()` |
+
+**判斷函式是否「只做一件事」的關鍵：**
+
+- **如果能用文字描述函式功能時，包含了「不同層次」的抽象概念步驟，就表示做了不只一件事**
+  
+  例如：「這個函式會**解析 JSON 字串**，**驗證欄位**，然後**存入資料庫**」  
+  → 包含三個不同抽象層次的動作：低階的字串解析、中階的驗證、高階的資料持久化，表示做了不只一件事。
+
+- **所有行為應該在「同個層級」的抽象概念**
+
+  **範例：不同抽象層級混雜在一起（❌ 不好）**
+  ```typescript
+  function processOrder(orderId: string) {
+    // 高階：獲取訂單 (業務概念)
+    const order = orderRepository.findById(orderId);
+    
+    // 低階：字串操作細節
+    const emailBody = `Dear ${order.user.name},\n\nYour order #${orderId} has been processed.\n\nTotal: $${order.total}`;
+    
+    // 中階：驗證邏輯
+    if (order.total > 1000) {
+      order.status = 'PENDING_APPROVAL';
+    }
+    
+    // 高階：發送郵件
+    emailService.send(order.user.email, emailBody);
+    
+    // 高階：更新資料庫
+    orderRepository.save(order);
+  }
+  ```
+  **問題：** 這個函式混雜了多個抽象層級：
+  - 業務層級（獲取訂單、更新訂單狀態）
+  - 細節層級（字串拼接、金額判斷）
+  - 基礎建設層級（資料庫、郵件服務）
+
+  **改進：保持在同一個抽象層級（✅ 好）**
+  ```typescript
+  // 主函式：保持在高階業務概念層級
+  function processOrder(orderId: string) {
+    const order = getOrder(orderId);
+    updateOrderStatus(order);
+    notifyCustomer(order);
+    saveOrder(order);
+  }
+  
+  // 每個子函式處理單一層級的抽象
+  function getOrder(orderId: string): Order {
+    return orderRepository.findById(orderId);
+  }
+  
+  function updateOrderStatus(order: Order): void {
+    if (requiresApproval(order)) {
+      order.status = 'PENDING_APPROVAL';
+    }
+  }
+  
+  function requiresApproval(order: Order): boolean {
+    return order.total > 1000;
+  }
+  
+  function notifyCustomer(order: Order): void {
+    const emailBody = buildOrderConfirmationEmail(order);
+    emailService.send(order.user.email, emailBody);
+  }
+  
+  function buildOrderConfirmationEmail(order: Order): string {
+    return `Dear ${order.user.name},\n\nYour order #${order.id} has been processed.\n\nTotal: $${order.total}`;
+  }
+  
+  function saveOrder(order: Order): void {
+    orderRepository.save(order);
+  }
+  ```
+
+  **好處：**
+  - `processOrder()` 讀起來像一篇清楚的業務流程描述
+  - 每個函式都在同一個抽象層級運作
+  - 當需要修改郵件格式時，只需要修改 `buildOrderConfirmationEmail()`
+  - 當需要修改審核邏輯時，只需要修改 `requiresApproval()`
 
 #### 3. 區塊與縮排 (Blocks and Indenting)
 
